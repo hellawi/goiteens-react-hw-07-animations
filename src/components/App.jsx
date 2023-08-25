@@ -4,6 +4,10 @@ import ContactForm from "./ContactForm/ContactForm";
 import ContactsList from "./ContactsList/ContactsList";
 import Input from "./Input/Input";
 import { Typography } from "@mui/material";
+import { getContactsService, postContactService, deleteContactService } from "../services/contactsServices";
+import '../config/axios.config'
+import Alert from "./AlertORG";
+import SimpleBackdrop from "./Loader/Loader";
 
 function initializationContacts(){
   const contacts = localStorage.getItem('contacts')
@@ -18,6 +22,10 @@ function App() {
   const [contacts, setContacts] = useState(initializationContacts);
   const [query, setQuery] = useState("");
   useEffect(() => {
+    getContactsService().then((data) => setContacts(data))
+  }, [])
+
+  useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts))
   }, [contacts])
 
@@ -27,18 +35,23 @@ function App() {
       alert('This contact is already exists!')
       return
     }
-    const newContact = {
-      id: nanoid(),
-      name,
-      number,
-      org,
-      email
-    };
-    setContacts((prevContacts) => [newContact, ...prevContacts]);
+    postContactService(name, number, org, email).then((newContact) => {
+      setContacts((prevContacts) => [newContact, ...prevContacts]);
+    })
+    // const newContact = {
+    //   id: nanoid(),
+    //   name,
+    //   number,
+    //   org,
+    //   email
+    // };
+    
   }
 
   function removeContact(id){
-    setContacts((prevContacts) => prevContacts.filter((contact) => contact.id !== id))
+    deleteContactService(id).then(() => {
+      setContacts((prevContacts) => prevContacts.filter((contact) => contact.id !== id))
+    })
   }
 
   const filteredContacts = contacts.filter((contact) => {
@@ -61,11 +74,6 @@ function App() {
       <div className="main">
         <Input value={query} onChange={(event) => setQuery(event.target.value)} />
         <ContactsList contacts={filteredContacts} onDelete={removeContact} />
-        {/* {filteredContacts.length !== 0 ? (
-          
-        ) : (
-          <InfoAlert />
-        )} */}
         <div className="typography">
           <Typography variant="h6" sx={{color: "gray"}}>{contacts.length} contacts available</Typography>
         </div>

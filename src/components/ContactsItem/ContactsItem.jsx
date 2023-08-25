@@ -20,6 +20,7 @@ import {
 } from "@mui/icons-material";
 import { useState } from "react";
 import { motion } from 'framer-motion'
+import AlertORG from "../AlertORG";
 
 const style = {
   position: "absolute",
@@ -33,7 +34,7 @@ const style = {
   p: 4,
 };
 
-function ContactsItem({ name, number, org, email, onDelete, id }) {
+function ContactsItem({ name, number, org, email, typeMobile, onDelete, id }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -102,6 +103,9 @@ function ContactsItem({ name, number, org, email, onDelete, id }) {
               <span className={styles["modal-mobile"]}>Mobile</span>
             </div>
             <div className={styles["modal-items"]}>
+              {org.length != 0 ? <span></span>
+                : <AlertORG />}
+
               {org.length != 0 && (
                 <CorporateFareOutlined
                   style={{ color: "blue", marginRight: 8 }}
